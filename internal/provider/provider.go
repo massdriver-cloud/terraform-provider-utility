@@ -32,7 +32,8 @@ func (p *UtilityProvider) Metadata(ctx context.Context, req provider.MetadataReq
 
 func (p *UtilityProvider) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
-		Attributes: map[string]tfsdk.Attribute{},
+		Attributes:          map[string]tfsdk.Attribute{},
+		MarkdownDescription: "No configuration is needed for this provider.",
 	}, nil
 }
 
