@@ -2,7 +2,6 @@ package provider
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net"
 	"regexp"
@@ -168,23 +167,9 @@ func (r *AvailableCidrResource) Create(ctx context.Context, req resource.CreateR
 			return
 		}
 
-		// The FindAvailableCIDR function errors if one of the "used" CIDRs
-		// isn't contained in the "from" cidr. Since we can have multiple "froms",
-		// we should only pass the used CIDRs that are within the from
-		var containedCidrs []*net.IPNet
-		for _, used := range usedCidrs {
-			if cidr.ContainsCIDR(fromCidr, used) {
-				containedCidrs = append(containedCidrs, used)
-			}
-		}
-
-		result, findErr = cidr.FindAvailableCIDR(fromCidr, &mask, containedCidrs)
-		if findErr != nil && !errors.Is(findErr, cidr.ErrNoAvailableCIDR) {
-			resp.Diagnostics.AddError(
-				"Error while finding available CIDR",
-				fmt.Sprintf("... details ... %s", findErr.Error()),
-			)
-			return
+		result, findErr = cidr.FindAvailableCIDR(fromCidr, &mask, usedCidrs)
+		if result != nil {
+			break
 		}
 	}
 
